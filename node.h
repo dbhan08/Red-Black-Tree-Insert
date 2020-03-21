@@ -16,6 +16,8 @@ public:
     int*  getValue();
     void setLeft(node*);
     void setRight(node*);
+    void setColor(int color);
+    int getColor();
 
     
     
@@ -24,6 +26,7 @@ private:
     node* left;
     node* right;
     int value;
+    int color;
     
 };
 

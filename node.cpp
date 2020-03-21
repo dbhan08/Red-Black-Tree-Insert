@@ -47,3 +47,11 @@ void node::setValue(int newValue) {
     value =  newValue;
 }
 
+void node::setColor(int newColor) {
+    color = newColor;
+}
+
+int node::getColor() {
+    return color;
+}
+
