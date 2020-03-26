@@ -55,3 +55,12 @@ int node::getColor() {
     return color;
 }
 
+void node::setParent(node* newParent) {
+    parent = newParent;
+    
+}
+
+node* node::getParent() {
+    return parent;
+}
+

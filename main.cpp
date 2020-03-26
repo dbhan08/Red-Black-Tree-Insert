@@ -6,43 +6,15 @@ using namespace std;
 
 
 
-node *getParent(node* root, node* find) {
-    if(find != NULL && root != NULL) {
-        if(root->getLeft() == find || root->getRight() == find) {
-            return root;
-        } else if(*root->getValue() > *find->getValue()) {
-            if(root->getLeft()) {
-                return getParent(root->getLeft(),find);
-            } else {
-                return NULL;
-            }
-            
-            
-        } else if(*root->getValue() < *find->getValue()) {
-            if(root->getRight()) {
-                return getParent(root->getRight(),find);
-            } else {
-                return NULL;
-            }
-            
-        } else {
-            return NULL;
-        }
-        
-    } else {
-        return NULL;
-    }
-    
-    
-}
 
 
 
 
 
 
-node* getSibling(node *root,node* find) {
-    node * parent = getParent(root,find);
+
+node* getSibling(node* find) {
+    node * parent = find->getParent();
     if(parent != NULL) {
         if(parent->getLeft() == find) {
             return parent->getRight();
@@ -55,19 +27,19 @@ node* getSibling(node *root,node* find) {
 }
 
 
-node* getUncle(node* root,node* find) {
+node* getUncle(node* find) {
     if(find != NULL) {
-        node * parent = getParent(root,find);
-        return getSibling(root,parent);
+        node * parent = find->getParent();
+        return getSibling(parent);
     } else {
         return NULL;
     }
 }
 
-node* getGrand(node* root, node * find) {
-    node * parent = getParent(root,find);
+node* getGrand(node * find) {
+    node * parent = find->getParent();
     if(parent != NULL) {
-        return getParent(root,parent);
+        return parent->getParent();
     } else {
         return NULL;
     }
@@ -83,6 +55,7 @@ void insert(node* &root,node* head ,node* temp) {
         // Make it a new node
         root->setColor(RED);
         root = temp;
+        temp->setParent(NULL);
         
     } else if(*temp->getValue() == *head->getValue()) {
         // If value is already in tree no need for another node
@@ -96,6 +69,7 @@ void insert(node* &root,node* head ,node* temp) {
             
             temp->setColor(RED);
             head->setLeft(temp);
+            temp->setParent(head);
             
         } else {
             // Transverse to the less
@@ -108,6 +82,7 @@ void insert(node* &root,node* head ,node* temp) {
             
             temp->setColor(RED);
             head->setRight(temp);
+            temp->setParent(head);
             
         } else {
             // Transverse to the right
@@ -121,44 +96,76 @@ void insert(node* &root,node* head ,node* temp) {
     
     
 }
-
+// Pseudo code from https://www2.cs.duke.edu/courses/spring05/cps130/lectures/skiena.lectures/lecture10.pdf
 void rotateLeft(node* root, node* temp) {
-    node* right = temp->getRight();
-    if(right != NULL) {
-        temp->setRight(right->getRight());
-        if(right->getRight() != NULL) {
-            getParent(rootright->getLeft()) = temp;
-            getParent(root,right) = getParent(root,temp);
-        }
-        if(getParent(root,temp) != NULL) {
-            
-        }
+    node * y = temp->getRight();
+    temp->setRight(y->getLeft());
+    if(y->getLeft() != NULL) {
+        y->getLeft()->setParent(temp);
+        
     }
+    y->setParent(temp->getParent());
+    if(temp->getParent() == NULL) {
+        root = y;
+    } else if(temp = temp->getParent()->getLeft()) {
+        temp->getParent()->setLeft(y);
+    } else {
+        temp->getParent()->setRight(y);
+    }
+    y->setLeft(temp);
+    x->setParent(y);
+    
+    
+}
+
+
+
+
+
+void rotateRight(node* root, node* temp) {
+    node * y = temp->getLeft();
+    temp->setRight(y->getRight());
+    if(y->getRight() != NULL) {
+        y->getRight()->setParent(temp);
+        
+    }
+    y->setParent(temp->getParent());
+    if(temp->getParent() == NULL) {
+        root = y;
+    } else if(temp = temp->getParent()->getLeft()) {
+        temp->getParent()->setLeft(y);
+    } else {
+        temp->getParent()->setRight(y);
+    }
+    y->setRight(temp);
+    x->setParent(y);
+    
+    
 }
 
 
 void repairAdd(node* root, node* temp) {
     int RED = 0;
     int BLACK = 1;
-    if(getParent(root,temp) == NULL)) {
+    if(temp->getParent() == NULL) {
         temp ->setColor(BLACK);
         return;
-    } else if(getParent(root,temp)->getColor() == BLACK) {
+    } else if(temp->getParent()->getColor() == BLACK) {
         return;
-    } else if(getParent(root,temp)->getColor() == RED && getUncle(root,temp)->getColor() == RED) {
-        getParent(root,temp)->setColor(BLACK);
-        getUncle(root,temp)->setColor(BLACK);
-        getGrand(root,temp)->setColor(RED);
-        repairAdd(getGrand(root,temp));
+    } else if(temp->getParent()->getColor() == RED && getUncle(temp)->getColor() == RED) {
+        temp->getParent()->setColor(BLACK);
+        getUncle(temp)->setColor(BLACK);
+        getGrand(temp)->setColor(RED);
+        repairAdd(root,getGrand(temp));
         
-    } else if(getUncle(root,temp)->getColor == BLACK) {
-        if(getGrand(root,temp)->getLeft() == getParent(root,temp)) {
-            if(temp=getParent(root,temp)->getRight()) {
+    } else if(getUncle(temp)->getColor() == BLACK) {
+        if(getGrand(temp)->getLeft() == getUncle(temp)) {
+            if(temp == temp->getParent()->getLeft()) {
                 
             }
             
-        } else if(getGrand(root,temp)->getRight() == getParent(root,temp)) {
-            if(temp=getParent(root,temp)->getLeft()) {
+        } else if(getGrand(temp)->getRight() == getUncle(temp)) {
+            if(temp==temp->getParent()->getRight()) {
                 
             }
             

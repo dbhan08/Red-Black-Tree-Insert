@@ -18,6 +18,8 @@ public:
     void setRight(node*);
     void setColor(int color);
     int getColor();
+    void setParent(node*);
+    node* getParent();
 
     
     
@@ -27,6 +29,7 @@ private:
     node* right;
     int value;
     int color;
+    node* parent;
     
 };
 
