@@ -158,22 +158,30 @@ void repairAdd(node* root, node* temp) {
         getGrand(temp)->setColor(RED);
         repairAdd(root,getGrand(temp));
         
-    } else if(getUncle(temp)->getColor() == BLACK) {
+        
+    } else if(getUncle(temp)->getColor() == BLACK)   {
+        
         if(getGrand(temp)->getLeft() == getUncle(temp)) {
             if(temp == temp->getParent()->getLeft()) {
-                
+                rotateLeft(root,parent);
             }
+            
+            
             
         } else if(getGrand(temp)->getRight() == getUncle(temp)) {
             if(temp==temp->getParent()->getRight()) {
-                
+                rotateRight(root,parent);
             }
-            
         }
-    }
+    
         
     
+    }
 }
+
+    
+    
+
 
 
 
