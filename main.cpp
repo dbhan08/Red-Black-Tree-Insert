@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cstring>
 #include "node.h"
+#include <fstream>
 
 using namespace std;
 
@@ -52,10 +53,12 @@ void insert(node* &root,node* head ,node* temp) {
     int BLACK = 1;
     // If tree is empty
     if(root == NULL) {
+        cout << "a" << endl;
         // Make it a new node
-        root->setColor(RED);
         root = temp;
-        temp->setParent(NULL);
+        root->setColor(RED);
+        
+      //  temp->setParent(NULL);
         
     } else if(*temp->getValue() == *head->getValue()) {
         // If value is already in tree no need for another node
@@ -69,7 +72,7 @@ void insert(node* &root,node* head ,node* temp) {
             
             temp->setColor(RED);
             head->setLeft(temp);
-            temp->setParent(head);
+           // temp->setParent(head);
             
         } else {
             // Transverse to the less
@@ -82,7 +85,7 @@ void insert(node* &root,node* head ,node* temp) {
             
             temp->setColor(RED);
             head->setRight(temp);
-            temp->setParent(head);
+          //  temp->setParent(head);
             
         } else {
             // Transverse to the right
@@ -210,9 +213,91 @@ void repairAdd(node* root, node* temp) {
 void add(node* &root, int value) {
     node* temp = new node(value);
     insert(root,root,temp);
+    cout << "a" << endl;
+    //repairAdd(root,temp);
     
 }
 
+void parse(char* in, int* modif, int &count) {
+    int l = 0;  //keeps track of # of chars before space
+    for (int i = 0; i < strlen(in); i++) {
+        if (in[i] == ' ') {
+            if (l == 1) {
+                int temp = 0;
+                temp = in[i-1] - '0';
+                modif[count] = temp;
+                count++;
+                l = 0;
+            } else {
+                int temp = 0;
+                for (int a = 0; a < l; a++) {
+                    temp = 10 * temp + (in[i-l+a] - '0');
+                }
+                modif[count] = temp;
+                count++;
+                l = 0;
+            }
+        } else {
+            int temp = 0;
+            l++;
+            if (i == strlen(in) - 1) {  //last possible pair of chars
+                for (int a = 0; a < l; a++) {
+                    temp = 10 * temp + (in[i+a+1-l] - '0');
+                }
+                modif[count] = temp;
+                count++;
+            }
+        }
+    }
+}
+
+
+
+
+
+
+
+void visualize(node* head, int depth=0)
+
+{
+    int RED = 0;
+    int BLACK = 1;
+    if(head != NULL ) {
+        if(head->getRight() != NULL) {
+            //   cout << "a" << endl;
+            //  cout << head->getRight() << endl;
+            visualize(head->getRight(), depth+1);
+            
+        }
+        // cout << "d" << endl;
+        int temp = depth;
+        
+        while(depth > 0) {
+            cout << "  ";
+            depth --;
+        }
+        if(head != NULL) {
+            
+           
+            if(head->getColor() == RED) {
+                 cout << *head->getValue() << "(RED)" << endl;
+            } else {
+                cout << *head->getValue() <<"(BLACK)"<< endl;
+            }
+            //    cout << "b" << endl;
+            
+        }
+        
+        if(head->getLeft() != NULL) {
+            // cout << "c" << endl;
+            visualize(head->getLeft(), temp+1);
+            
+            
+        }
+    }
+    
+    // cout << "kms" << endl;
+}
 
 
 
@@ -223,7 +308,159 @@ void add(node* &root, int value) {
 
 
 int main() {
-return 0;
-
-
+    
+    // The main function jsut takes care of basic input stuff
+    // Just the input stuff
+    node* root = new node(0);
+    node* curr = new node(0);
+    curr = NULL;
+    root = NULL;
+    int count = 0;
+    int modif[100];
+    char fileName[30];
+    
+    for (int i = 0; i < 100; i++) {
+        modif[i] = 0;
+    }
+    
+    cout << "If you would like to input manually type '1' if you would like to do it from a file type '2':" << endl;
+    char inp[10];
+    char input[100000];
+    cin.get(inp,10);
+    cin.clear();
+    cin.ignore(1000000,'\n');
+    if(strcmp(inp,"1")== 0) {
+        cout << "Enter a set of numbers sperated by spaces:" << endl;
+        char in[100000];
+        cin.get(in, 100000);
+        cin.clear();
+        cin.ignore(1000000, '\n');
+        parse(in,modif,count);
+        
+        for(int i = 0; modif[i] != 0; i++) {
+            
+            add(root,modif[i]);
+        }
+        //cout << root->getValue() << endl;
+        visualize(root,0);
+        // int size = sizeof(modif)/sizeof(modif[0]);
+        
+        
+        
+    } else if(strcmp(inp,"2")== 0) {
+        
+        // Following chunk from Omar Nassar
+        cout << endl << "What is the name of the file?" << endl << ">> ";
+        cin.get(fileName, 30);
+        cin.clear();
+        cin.ignore(100000, '\n');
+        streampos size;
+        ifstream file(fileName, ios::in | ios::binary | ios::ate);
+        if (file.is_open()) {
+            size = file.tellg();
+            file.seekg(0, ios::beg);
+            file.read(input, size);
+            file.close();
+            parse(input,modif,count);
+            for(int i = 0; modif[i] != 0; i++) {
+                    add(root,modif[i]);
+            }
+            visualize(root,0);
+            //cout << root->ge
+            
+            
+            
+            // int size = sizeof(modif)/sizeof(modif[0]);
+            
+            
+        }
+        
+        
+    } else {
+        cout << "Enter a valid option!" << endl;
+    }
+    
+    
+    bool running = true;
+    while(running) {
+        cout << "Would you like to 'insert', 'delete', 'search', or quit?" << endl;
+        char inp[50];
+        cin.get(inp,50);
+        cin.clear();
+        cin.ignore(50,'\n');
+        if(strcmp(inp, "insert") == 0)  {
+            cout << "What would you like to Insert" << endl;
+            char inp[100];
+            cin.get(inp,100);
+            cin.clear();
+            cin.ignore(100,'\n');
+            int a = atoi(inp);
+            
+            add(root,a);
+            visualize(root,0);
+            
+            
+            
+            
+        } else if(strcmp(inp, "search") == 0) {
+            /*
+            cout << "What would you like to search for" << endl;
+            char inp[100];
+            cin.get(inp,100);
+            cin.clear();
+            cin.ignore(100,'\n');
+            int a = atoi(inp);
+            
+            //  cout << *root->getValue() << endl;
+            
+            //  cout << *search(root,a) ->getValue() << "l" << endl;
+            //   cout << search(root,a) << "n" << endl;
+            
+            if( search(root,a) != NULL) {
+                
+                cout << "The number was found!" << endl;
+            } else {
+                //  cout << search(root,a) << endl;
+                cout << "Number not in tree!" << endl;
+            }
+            
+            //  cout << root->getValue()  << "z" << endl;
+            */
+        } else if(strcmp(inp, "delete") == 0) {
+            char inp[100];
+            cin.get(inp,100);
+            cin.clear();
+            cin.ignore(100,'\n');
+            int a = atoi(inp);
+            
+            
+            visualize(root,0);
+            
+            
+        } else if(strcmp(inp, "quit") == 0) {
+            running = false;
+            
+            
+        } else {
+            cout << "Enter a valid option" << endl;;
+            
+        }
+        
+        
+        
+        
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    return 0;
 }
+
+
+
+
