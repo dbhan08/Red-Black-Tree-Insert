@@ -1,3 +1,10 @@
+/*
+ Following is the cpp file for the node class which includes all the functions
+ By: Deyvik Bhan
+ 
+ */
+
+
 #include "node.h"
 #include <iostream>
 

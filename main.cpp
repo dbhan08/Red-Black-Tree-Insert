@@ -1,3 +1,14 @@
+/*
+ Following Program is a red black-tree data structure which only includes the insert and the visulaize function for now.
+ 
+ By:Deyvik Bhan
+ Teacher:Mr.Galbraith
+ 
+ 
+ */
+
+
+
 #include <iostream>
 #include <cstring>
 #include "node.h"
@@ -7,7 +18,7 @@ using namespace std;
 
 
 
-
+// Following function is the visualize function which is taken from my binary search tree with some modficications. Also ali Fakhry helped me with the binary search tree version
 
 void visualize(node* head, int depth=0)
 
@@ -52,7 +63,7 @@ void visualize(node* head, int depth=0)
 }
 
 
-
+// Following functin gets the sibling of a node in the tree
 
 node* getSibling(node* find) {
     node * parent = find->getParent();
@@ -72,6 +83,8 @@ node* getSibling(node* find) {
 }
 
 
+
+// Following function gets the uncle of a node in the tree
 node* getUncle(node* find) {
     
     if(find != NULL) {
@@ -85,6 +98,8 @@ node* getUncle(node* find) {
     
 }
 
+// Following function gets the grand parent of a node in the tree
+
 node* getGrand(node * find) {
     node * parent = find->getParent();
     if(parent != NULL) {
@@ -95,7 +110,7 @@ node* getGrand(node * find) {
 }
 
 
-// Following function inserts into the tree, also from my binary search tree project
+// Following function inserts into the tree, also from my binary search tree project with some minor modifications
 void insert(node* &root,node* head ,node* temp) {
     int RED = 0;
     int BLACK = 1;
@@ -147,33 +162,8 @@ void insert(node* &root,node* head ,node* temp) {
     
     
 }
-/*
-// Pseudo code from https://www2.cs.duke.edu/courses/spring05/cps130/lectures/skiena.lectures/lecture10.pdf
-void rotateLeft(node* &root, node* temp) {
-    
-    node * y = temp->getRight();
-    cout << y;
-    temp->setRight(y->getLeft());
-    cout << "e" << endl;
-    
-    if(y->getLeft() != NULL) {
-        y->getLeft()->setParent(temp);
-        
-    }
-    y->setParent(temp->getParent());
-    if(temp->getParent() == NULL) {
-        root = y;
-    } else if(temp == temp->getParent()->getLeft()) {
-        temp->getParent()->setLeft(y);
-    } else {
-        temp->getParent()->setRight(y);
-    }
-    y->setLeft(temp);
-    temp->setParent(y);
-    
-    
-}
- */
+
+
 
 // Pseudo code from https://www2.cs.duke.edu/courses/spring05/cps130/lectures/skiena.lectures/lecture10.pdf
 void leftRotate(node* &root, node* nextNode)
@@ -186,7 +176,7 @@ void leftRotate(node* &root, node* nextNode)
         nextNode -> setRight(current -> getLeft());
         if(current -> getLeft() != NULL)
         {
-            current -> getLeft() -> setParent(nextNode); //set current's left to the parent of the nextNode (the inputted node)
+            current -> getLeft() -> setParent(nextNode);
         }
          current -> setParent(nextNode -> getParent());
     
@@ -194,11 +184,11 @@ void leftRotate(node* &root, node* nextNode)
    
     if(nextNode == root)
     {
-       ;
+       
         
         root = current; //The new root is now the current
-        cout << *root->getValue() << "kms"<< endl;
-    }
+        
+            }
     else
     {
         
@@ -219,7 +209,7 @@ void leftRotate(node* &root, node* nextNode)
 
 
 
-
+//Pseudo code from https://www2.cs.duke.edu/courses/spring05/cps130/lectures/skiena.lectures/lecture10.pdf
 void rightRotate(node* &root, node* nextNode)
 {
     node* current = nextNode -> getLeft();
@@ -238,13 +228,12 @@ void rightRotate(node* &root, node* nextNode)
     
     if(nextNode == root)
     {
-        cout << "x" << endl;
+      
         root = current; //The new root is now the current
     }
     else
     {
-        cout << "g" << endl;
-        if(nextNode == nextNode -> getParent() -> getLeft())
+               if(nextNode == nextNode -> getParent() -> getLeft())
         {
             nextNode -> getParent() -> setLeft(current);
         }
@@ -274,34 +263,11 @@ void rightRotate(node* &root, node* nextNode)
 
 
 
-/*
-
-void rotateRight(node* root, node* temp) {
-    node * y = temp->getLeft();
-    temp->setRight(y->getRight());
-    if(y->getRight() != NULL) {
-        y->getRight()->setParent(temp);
-        
-    }
-    y->setParent(temp->getParent());
-    if(temp->getParent() == NULL) {
-        root = y;
-    } else if(temp == temp->getParent()->getLeft()) {
-        temp->getParent()->setLeft(y);
-    } else {
-        temp->getParent()->setRight(y);
-    }
-    y->setRight(temp);
-    temp->setParent(y);
-    
-    
-}
-*/
 
 
 
 
-
+// Following functions swaps colors between two nodes
 
 
 void swapColor(node* first, node* second) {
@@ -309,27 +275,27 @@ void swapColor(node* first, node* second) {
     int secondColor = second->getColor();
     first->setColor(secondColor);
     second->setColor(firstColor);
+  
 }
 
 
+// Following function is the fifth case which is either called after the fourth case or exclusively on its own
 
-
-void case5(node* root, node* temp) {
+void case5(node* &root, node* temp) {
     
     if(getGrand(temp)->getRight() == temp->getParent() && temp->getParent()->getRight() == temp) {
-        cout << *getGrand(temp)->getValue() << "k" << endl;
-        cout << *temp->getValue() << "f" << endl;
+       
         leftRotate(root,getGrand(temp));
-        swapColor(temp->getParent(),temp);
+        swapColor(temp->getParent(),getSibling(temp));
     } else if(getGrand(temp)->getLeft() == temp->getParent() && temp->getParent()->getLeft() == temp) {
         rightRotate(root,getGrand(temp));
-        swapColor(temp->getParent(),temp);
+        swapColor(temp->getParent(),getSibling(temp));
     }
 }
 
 
-
-void repairAdd(node* root, node* temp) {
+// Following function recolors the tree appropriately
+void repairAdd(node* &root, node* temp) {
 
     int RED = 0;
     int BLACK = 1;
@@ -358,7 +324,7 @@ void repairAdd(node* root, node* temp) {
             if(temp == temp->getParent()->getLeft()) {
                 
                 rightRotate(root,temp->getParent());
-                visualize(root,0);
+                
                  case5(root,temp->getRight());
                 return;
                 
@@ -387,7 +353,7 @@ void repairAdd(node* root, node* temp) {
 
 
 
-
+// Following function combines the binary search tree add and the tree adjustment to make the red-black tree
 void add(node* &root, int value) {
     node* temp = new node(value);
     insert(root,root,temp);
@@ -396,6 +362,8 @@ void add(node* &root, int value) {
     
 }
 
+
+// Following function Taken from stefan ene
 void parse(char* in, int* modif, int &count) {
     int l = 0;  //keeps track of # of chars before space
     for (int i = 0; i < strlen(in); i++) {
@@ -442,7 +410,7 @@ void parse(char* in, int* modif, int &count) {
 
 
 
-
+// From my binary search tree as well, some code taken from stefan, and the file stuff is taken from OMar Nassar
 
 int main() {
     

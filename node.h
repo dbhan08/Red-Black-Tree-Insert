@@ -1,3 +1,11 @@
+/*
+ Following is the header file for the node class which states all the functions
+ By: Deyvik Bhan
+ 
+ */
+
+
+
 #ifndef node_h
 #define node_h
 #include <iostream>
