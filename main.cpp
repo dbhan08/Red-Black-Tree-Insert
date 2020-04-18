@@ -9,7 +9,47 @@ using namespace std;
 
 
 
+void visualize(node* head, int depth=0)
 
+{
+    int RED = 0;
+    int BLACK = 1;
+    if(head != NULL ) {
+        if(head->getRight() != NULL) {
+            //   cout << "a" << endl;
+            //  cout << head->getRight() << endl;
+            visualize(head->getRight(), depth+1);
+            
+        }
+        // cout << "d" << endl;
+        int temp = depth;
+        
+        while(depth > 0) {
+            cout << "  ";
+            depth --;
+        }
+        if(head != NULL) {
+            
+            
+            if(head->getColor() == RED) {
+                cout << *head->getValue() << "(RED)" << endl;
+            } else {
+                cout << *head->getValue() <<"(BLACK)"<< endl;
+            }
+            //    cout << "b" << endl;
+            
+        }
+        
+        if(head->getLeft() != NULL) {
+            // cout << "c" << endl;
+            visualize(head->getLeft(), temp+1);
+            
+            
+        }
+    }
+    
+    // cout << "kms" << endl;
+}
 
 
 
@@ -17,24 +57,32 @@ using namespace std;
 node* getSibling(node* find) {
     node * parent = find->getParent();
     if(parent != NULL) {
+     
         if(parent->getLeft() == find) {
+       
             return parent->getRight();
         } else {
+          
             return parent->getLeft();
         }
     } else {
+        
         return NULL;
     }
 }
 
 
 node* getUncle(node* find) {
+    
     if(find != NULL) {
+       
         node * parent = find->getParent();
+        
         return getSibling(parent);
     } else {
         return NULL;
     }
+    
 }
 
 node* getGrand(node * find) {
@@ -53,12 +101,12 @@ void insert(node* &root,node* head ,node* temp) {
     int BLACK = 1;
     // If tree is empty
     if(root == NULL) {
-        cout << "a" << endl;
+       // cout << "a" << endl;
         // Make it a new node
         root = temp;
         root->setColor(RED);
         
-      //  temp->setParent(NULL);
+        temp->setParent(NULL);
         
     } else if(*temp->getValue() == *head->getValue()) {
         // If value is already in tree no need for another node
@@ -72,7 +120,7 @@ void insert(node* &root,node* head ,node* temp) {
             
             temp->setColor(RED);
             head->setLeft(temp);
-           // temp->setParent(head);
+            temp->setParent(head);
             
         } else {
             // Transverse to the less
@@ -85,7 +133,7 @@ void insert(node* &root,node* head ,node* temp) {
             
             temp->setColor(RED);
             head->setRight(temp);
-          //  temp->setParent(head);
+            temp->setParent(head);
             
         } else {
             // Transverse to the right
@@ -99,10 +147,15 @@ void insert(node* &root,node* head ,node* temp) {
     
     
 }
+/*
 // Pseudo code from https://www2.cs.duke.edu/courses/spring05/cps130/lectures/skiena.lectures/lecture10.pdf
-void rotateLeft(node* root, node* temp) {
+void rotateLeft(node* &root, node* temp) {
+    
     node * y = temp->getRight();
+    cout << y;
     temp->setRight(y->getLeft());
+    cout << "e" << endl;
+    
     if(y->getLeft() != NULL) {
         y->getLeft()->setParent(temp);
         
@@ -120,10 +173,108 @@ void rotateLeft(node* root, node* temp) {
     
     
 }
+ */
+
+// Pseudo code from https://www2.cs.duke.edu/courses/spring05/cps130/lectures/skiena.lectures/lecture10.pdf
+void leftRotate(node* &root, node* nextNode)
+{
+    node* current = nextNode -> getRight();
+    
+    
+
+        
+        nextNode -> setRight(current -> getLeft());
+        if(current -> getLeft() != NULL)
+        {
+            current -> getLeft() -> setParent(nextNode); //set current's left to the parent of the nextNode (the inputted node)
+        }
+         current -> setParent(nextNode -> getParent());
+    
+    
+   
+    if(nextNode == root)
+    {
+       ;
+        
+        root = current; //The new root is now the current
+        cout << *root->getValue() << "kms"<< endl;
+    }
+    else
+    {
+        
+        if(nextNode == nextNode -> getParent() -> getLeft())
+        {
+            nextNode -> getParent() -> setLeft(current);
+        }
+        else
+        {
+            nextNode -> getParent() -> setRight(current);
+        }
+    }
+    
+    current -> setLeft(nextNode);
+    nextNode -> setParent(current);
+    
+}
 
 
 
 
+void rightRotate(node* &root, node* nextNode)
+{
+    node* current = nextNode -> getLeft();
+   
+   
+        nextNode -> setLeft(current -> getRight());
+    
+        if(current -> getRight() != NULL)
+        {
+            current -> getRight() -> setParent(nextNode); //set current's left to the parent of the nextNode (the inputted node)
+        }
+        current -> setParent(nextNode -> getParent());
+   
+
+    
+    
+    if(nextNode == root)
+    {
+        cout << "x" << endl;
+        root = current; //The new root is now the current
+    }
+    else
+    {
+        cout << "g" << endl;
+        if(nextNode == nextNode -> getParent() -> getLeft())
+        {
+            nextNode -> getParent() -> setLeft(current);
+        }
+        else
+        {
+            nextNode -> getParent() -> setRight(current);
+        }
+        
+    }
+   
+
+        current -> setRight(nextNode);
+   
+
+    
+        nextNode -> setParent(current);
+    
+
+}
+
+
+
+
+
+
+
+
+
+
+/*
 
 void rotateRight(node* root, node* temp) {
     node * y = temp->getLeft();
@@ -145,6 +296,13 @@ void rotateRight(node* root, node* temp) {
     
     
 }
+*/
+
+
+
+
+
+
 
 void swapColor(node* first, node* second) {
     int firstColor = first->getColor();
@@ -157,37 +315,52 @@ void swapColor(node* first, node* second) {
 
 
 void case5(node* root, node* temp) {
+    
     if(getGrand(temp)->getRight() == temp->getParent() && temp->getParent()->getRight() == temp) {
-        rotateLeft(root,getGrand(temp));
-        swapColor(temp->getParent(),getGrand(temp));
+        cout << *getGrand(temp)->getValue() << "k" << endl;
+        cout << *temp->getValue() << "f" << endl;
+        leftRotate(root,getGrand(temp));
+        swapColor(temp->getParent(),temp);
     } else if(getGrand(temp)->getLeft() == temp->getParent() && temp->getParent()->getLeft() == temp) {
-        rotateRight(root,getGrand(temp));
-        swapColor(temp->getParent(),getGrand(temp));
+        rightRotate(root,getGrand(temp));
+        swapColor(temp->getParent(),temp);
     }
 }
 
 
 
 void repairAdd(node* root, node* temp) {
+
     int RED = 0;
     int BLACK = 1;
     if(temp->getParent() == NULL) {
+        
+       
         temp ->setColor(BLACK);
         return;
     } else if(temp->getParent()->getColor() == BLACK) {
+       
         return;
-    } else if(temp->getParent()->getColor() == RED && getUncle(temp)->getColor() == RED) {
+    } else if(getUncle(temp) != NULL && temp->getParent()->getColor() == RED && getUncle(temp)->getColor() == RED) {
+        
         temp->getParent()->setColor(BLACK);
         getUncle(temp)->setColor(BLACK);
         getGrand(temp)->setColor(RED);
         repairAdd(root,getGrand(temp));
         
+      
+    } else if(!getUncle(temp) || getUncle(temp) ->getColor() == BLACK)   {
         
-    } else if(getUncle(temp)->getColor() == BLACK || !getUncle(temp))   {
-        
+       
+      
         if(getGrand(temp)->getLeft() == getUncle(temp)) {
+            
             if(temp == temp->getParent()->getLeft()) {
-                rotateLeft(root,temp->getParent());
+                
+                rightRotate(root,temp->getParent());
+                visualize(root,0);
+                 case5(root,temp->getRight());
+                return;
                 
             }
             
@@ -195,11 +368,16 @@ void repairAdd(node* root, node* temp) {
             
         } else if(getGrand(temp)->getRight() == getUncle(temp)) {
             if(temp==temp->getParent()->getRight()) {
-                rotateRight(root,temp->getParent());
+                leftRotate(root,temp->getParent());
+                case5(root,temp->getLeft());
+                return;
             }
+        } else {
+            case5(root,temp);
         }
     
-        case5(root,temp);
+      
+        
     
     }
 }
@@ -213,8 +391,8 @@ void repairAdd(node* root, node* temp) {
 void add(node* &root, int value) {
     node* temp = new node(value);
     insert(root,root,temp);
-    cout << "a" << endl;
-    //repairAdd(root,temp);
+
+    repairAdd(root,temp);
     
 }
 
@@ -257,47 +435,6 @@ void parse(char* in, int* modif, int &count) {
 
 
 
-void visualize(node* head, int depth=0)
-
-{
-    int RED = 0;
-    int BLACK = 1;
-    if(head != NULL ) {
-        if(head->getRight() != NULL) {
-            //   cout << "a" << endl;
-            //  cout << head->getRight() << endl;
-            visualize(head->getRight(), depth+1);
-            
-        }
-        // cout << "d" << endl;
-        int temp = depth;
-        
-        while(depth > 0) {
-            cout << "  ";
-            depth --;
-        }
-        if(head != NULL) {
-            
-           
-            if(head->getColor() == RED) {
-                 cout << *head->getValue() << "(RED)" << endl;
-            } else {
-                cout << *head->getValue() <<"(BLACK)"<< endl;
-            }
-            //    cout << "b" << endl;
-            
-        }
-        
-        if(head->getLeft() != NULL) {
-            // cout << "c" << endl;
-            visualize(head->getLeft(), temp+1);
-            
-            
-        }
-    }
-    
-    // cout << "kms" << endl;
-}
 
 
 
