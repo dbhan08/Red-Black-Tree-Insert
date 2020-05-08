@@ -121,7 +121,7 @@ void insert(node* &root,node* head ,node* temp) {
         root = temp;
         root->setColor(RED);
         
-        temp->setParent(NULL);
+        root->setParent(NULL);
         
     } else if(*temp->getValue() == *head->getValue()) {
         // If value is already in tree no need for another node
@@ -145,7 +145,6 @@ void insert(node* &root,node* head ,node* temp) {
         //If given value is greater then current nodes value
         if(head->getRight() == NULL) {
             // If the right node is null make new node of the given value
-            
             temp->setColor(RED);
             head->setRight(temp);
             temp->setParent(head);
@@ -168,6 +167,7 @@ void insert(node* &root,node* head ,node* temp) {
 // Pseudo code from https://www2.cs.duke.edu/courses/spring05/cps130/lectures/skiena.lectures/lecture10.pdf
 void leftRotate(node* &root, node* nextNode)
 {
+ 
     node* current = nextNode -> getRight();
     
     
@@ -211,7 +211,9 @@ void leftRotate(node* &root, node* nextNode)
 
 //Pseudo code from https://www2.cs.duke.edu/courses/spring05/cps130/lectures/skiena.lectures/lecture10.pdf
 void rightRotate(node* &root, node* nextNode)
+
 {
+   
     node* current = nextNode -> getLeft();
    
    
@@ -300,15 +302,15 @@ void repairAdd(node* &root, node* temp) {
     int RED = 0;
     int BLACK = 1;
     if(temp->getParent() == NULL) {
-        
+     
        
         temp ->setColor(BLACK);
         return;
     } else if(temp->getParent()->getColor() == BLACK) {
-       
+        
         return;
     } else if(getUncle(temp) != NULL && temp->getParent()->getColor() == RED && getUncle(temp)->getColor() == RED) {
-        
+      
         temp->getParent()->setColor(BLACK);
         getUncle(temp)->setColor(BLACK);
         getGrand(temp)->setColor(RED);
@@ -317,10 +319,11 @@ void repairAdd(node* &root, node* temp) {
       
     } else if(!getUncle(temp) || getUncle(temp) ->getColor() == BLACK)   {
         
-       
-      
+        
         if(getGrand(temp)->getLeft() == getUncle(temp)) {
             
+            
+
             if(temp == temp->getParent()->getLeft()) {
                 
                 rightRotate(root,temp->getParent());
@@ -328,39 +331,61 @@ void repairAdd(node* &root, node* temp) {
                  case5(root,temp->getRight());
                 return;
                 
+            } else {
+                case5(root,temp);
+                return;
             }
             
-            
-            
         } else if(getGrand(temp)->getRight() == getUncle(temp)) {
+        
+        
             if(temp==temp->getParent()->getRight()) {
                 leftRotate(root,temp->getParent());
                 case5(root,temp->getLeft());
                 return;
-            }
-        } else {
+            } else {
+            
             case5(root,temp);
+                return;
         }
     
       
-        
-    
+        }
     }
-}
-
-
-
-
-
-
-// Following function combines the binary search tree add and the tree adjustment to make the red-black tree
-void add(node* &root, int value) {
-    node* temp = new node(value);
-    insert(root,root,temp);
-
-    repairAdd(root,temp);
+    
     
 }
+
+
+node* remove(node* &root, int value); {
+    int RED = 0;
+    int BLACK = 1;
+    node* temp = search(root,value);
+    
+    if(temp != NULL) {
+        if(temp ->getLeft() != NULL && temp->getRight() != NULL) {
+            node* next = temp->getLeft();
+            while(next->getRight() != NULL) {
+                next = next->getRight();
+            }
+            
+            temp->setValue(*(next->getValue()));
+            
+        }
+    }
+    
+    if(next ->getLeft() != NULL || next ->getRight() != NULL) {
+        if(next ->getColor() == BLACK
+    }
+    
+}
+
+
+
+
+
+
+
 
 
 // Following function Taken from stefan ene
@@ -402,7 +427,14 @@ void parse(char* in, int* modif, int &count) {
 
 
 
-
+// Following function combines the binary search tree add and the tree adjustment to make the red-black tree
+void add(node* &root, int value) {
+    node* temp = new node(value);
+    insert(root,root,temp);
+    
+    repairAdd(root,temp);
+    
+}
 
 
 
