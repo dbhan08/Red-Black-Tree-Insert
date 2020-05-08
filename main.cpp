@@ -370,8 +370,7 @@ void ReplaceNode(Node* n, Node* child) {
 node* remove(node* &root, int value); {
     int RED = 0;
     int BLACK = 1;
-    int left = 2;
-    int right = 3;
+    int side;
     node* temp = search(root,value);
     
     if(temp != NULL) {
@@ -386,9 +385,18 @@ node* remove(node* &root, int value); {
         }
     }
     
+    if(next->getParent()->getLeft() == next) {
+        side = 0;
+    } else {
+        side = 1;
+    }
+    
+    
     if(next ->getLeft() != NULL || next ->getRight() != NULL) {
         if(next->getLeft() != NULL) {
-            if(next->getColor() == RED &&
+            if(next->getColor() == RED && next->getLeft()->getColor() == BLACK) {
+                
+            }
             
         } else if(next->getRight() != NULL) {
             
@@ -408,7 +416,38 @@ node* remove(node* &root, int value); {
 
 
 
+void DeleteCase1(Node* n) {
+    if (n->parent != nullptr) {
+        DeleteCase2(n);
+    }
+}
 
+void DeleteCase2(Node* n) {
+    Node* s = GetSibling(n);
+    
+    if (s->color == RED) {
+        n->parent->color = RED;
+        s->color = BLACK;
+        if (n == n->parent->left) {
+            RotateLeft(n->parent);
+        } else {
+            RotateRight(n->parent);
+        }
+    }
+    DeleteCase3(n);
+}
+
+void DeleteCase3(Node* n) {
+    Node* s = GetSibling(n);
+    
+    if ((n->parent->color == BLACK) && (s->color == BLACK) &&
+        (s->left->color == BLACK) && (s->right->color == BLACK)) {
+        s->color = RED;
+        DeleteCase1(n->parent);
+    } else {
+        DeleteCase4(n);
+    }
+}
 
 
 
