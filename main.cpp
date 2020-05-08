@@ -357,9 +357,21 @@ void repairAdd(node* &root, node* temp) {
 }
 
 
+void ReplaceNode(Node* n, Node* child) {
+    child->getParent() = n->getParent();
+    if (n == n->getParent()->getLeft()) {
+        n->getParent()->getLeft() = child;
+    } else {
+        n->getParent()->getRight() = child;
+    }
+}
+
+
 node* remove(node* &root, int value); {
     int RED = 0;
     int BLACK = 1;
+    int left = 2;
+    int right = 3;
     node* temp = search(root,value);
     
     if(temp != NULL) {
@@ -375,7 +387,20 @@ node* remove(node* &root, int value); {
     }
     
     if(next ->getLeft() != NULL || next ->getRight() != NULL) {
-        if(next ->getColor() == BLACK
+        if(next->getLeft() != NULL) {
+            if(next->getColor() == RED &&
+            
+        } else if(next->getRight() != NULL) {
+            
+        }
+    } else {
+        if(next->getColor() == RED) {
+            if(next->getParent() ->getLeft() == next) {
+                next->getParent()->setLeft(NULL);
+            } else {
+                next->getParent()->setLeft(NULL);
+            }
+        }
     }
     
 }
