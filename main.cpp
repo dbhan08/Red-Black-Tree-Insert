@@ -18,6 +18,15 @@ using namespace std;
 
 
 
+void DeleteCase1(node*& root,node* n);
+void DeleteCase2(node*& root,node* n);
+void DeleteCase3(node*& root,node* n);
+void DeleteCase4(node*& root,node* n);
+void DeleteCase5(node*& root,node* n);
+void DeleteCase6(node*& root,node* n);
+
+
+
 // Following function is the visualize function which is taken from my binary search tree with some modficications. Also ali Fakhry helped me with the binary search tree version
 
 void visualize(node* head, int depth=0)
@@ -357,81 +366,131 @@ void repairAdd(node* &root, node* temp) {
 }
 
 
-void ReplaceNode(Node* n, Node* child) {
-    child->getParent() = n->getParent();
-    if (n == n->getParent()->getLeft()) {
-        n->getParent()->getLeft() = child;
+
+
+// Following function searches the tree and wfinds the value
+node* search(node* root, int value) {
+    
+    if(root != NULL) {
+        // If the tree is not empty
+        if(value == *root->getValue()) {
+            // If the current node has the same value as the value being searched for return the current node(node found)
+            // cout << root->getValue() << "a" << endl;
+            return root;
+            
+            
+            
+            
+        } else if(value < *root->getValue()) {
+            // If value being searched for is less then the current nodes value
+            
+            if(root->getLeft() != NULL) {
+                // If there is a left node transverse to that node and check if it is equal
+                
+                return search(root->getLeft(), value);
+            } else {
+                // There is no node that matches the value
+                
+                return NULL;
+            }
+        } else if(value > *root->getValue() ) {
+            // If the value being searched for is greater then the current nodes value
+            
+            
+            if(root->getRight() != NULL) {
+                // If there is a right node transverse to that node and call the function
+                //      cout << root->getRight()->getValue() << "c" << endl;
+                return search(root->getRight(), value);
+                
+            } else {
+                // There is no node that matches the values
+                //  cout << "k" << endl;
+                return NULL;
+            }
+        } else {
+            
+            return NULL;
+        }
     } else {
-        n->getParent()->getRight() = child;
+        return NULL;
+    }
+    
+    
+}
+
+
+void ReplaceNode(node* parent, node* child) {
+    child->setParent(parent->getParent());
+    if (parent == parent->getParent()->getLeft()) {
+        parent->getParent()->setLeft(child);
+    } else {
+        parent->getParent()->setRight(child);
     }
 }
 
 
-node* remove(node* &root, int value); {
-    node* n= search(root,value);
-    if(n->getRight() != NULL) {
-        node* child = n->getRight();
+node* remove(node* &root, int value) {
+    node* child;
+    int RED = 0;
+    int BLACK = 0;
+    node* temp= search(root,value);
+    if(temp->getRight() != NULL) {
+        node* child = temp->getRight();
     } else {
-        node* child = n->getLeft();
+        node* child = temp->getLeft();
     }
     
   
-    if(n->getColor() == BLACK) {
+    if(temp->getColor() == BLACK) {
         if(child->getColor() == RED) {
             child->setColor(BLACK);
         } else {
             DeleteCase1(root,child);
         }
     }
-      ReplaceNode(n,child);
-    free(n)
+      ReplaceNode(temp,child);
+    free(temp);
 }
 
 
 
 
-void DeleteCase1(node*& root, Node* n) {
-    if (n->parent != NULL) {
-        DeleteCase2(n);
+void DeleteCase1(node*& root, node* n) {
+    int RED = 0;
+    int BLACK = 0;
+    if (n->getParent() != NULL) {
+        DeleteCase2(root,n);
     }
 }
 
-void DeleteCase2(node*& root,Node* n) {
-    Node* s = GetSibling(n);
+void DeleteCase2(node*& root,node* n) {
+    int RED = 0;
+    int BLACK = 0;
+    node* s = getSibling(n);
     
-    if (s->color == RED) {
-        n->parent->color = RED;
-        s->color = BLACK;
-        if (n == n->parent->left) {
-            RotateLeft(n->parent);
+    if (s->getColor() == RED) {
+        n->getParent()->setColor(RED);
+        s->setColor(BLACK);
+        if (n == n->getParent()->getLeft()) {
+            leftRotate(root,n->getParent());
         } else {
-            RotateRight(n->parent);
+            rightRotate(root,n->getParent());
         }
     }
-    DeleteCase3(n);
+    DeleteCase3(root,n);
 }
 
-void DeleteCase3(node*& root,Node* n) {
-    Node* s = GetSibling(n);
+void DeleteCase4(node*& root,node* n) {
+    int RED = 0;
+    int BLACK = 0;
+    node* s = getSibling(n);
     
-    if ((n->parent->color == BLACK) && (s->color == BLACK) &&
-        (s->left->color == BLACK) && (s->right->color == BLACK)) {
-        s->color = RED;
-        DeleteCase1(n->parent);
+    if ((n->getParent()->getColor() == RED) && (s->getColor() == BLACK) &&
+        (s->getLeft()->getColor() == BLACK) && (s->getRight()->getColor() == BLACK)) {
+        s->setColor(RED);
+        n->getParent()->setColor(BLACK);
     } else {
-        DeleteCase4(n);
-    }
-}
-
-void DeleteCase4(node*& root,Node* n) {
-    Node* s = GetSibling(n);
-    
-    if ((n->parent->color == RED) && (s->color == BLACK) &&
-        (s->left->color == BLACK) && (s->right->color == BLACK)) {
-        s->color = RED;
-        n->parent->color = BLACK;
-    } else {
-        DeleteCase5(n);
+        DeleteCase5(root,n);
     }
 }
 
@@ -439,45 +498,73 @@ void DeleteCase4(node*& root,Node* n) {
 
 
 
-void DeleteCase5(node*& root,Node* n) {
-    Node* s = GetSibling(root, n);
+
+
+
+
+
+void DeleteCase3(node*& root,node* n) {
+    int RED = 0;
+    int BLACK = 0;
+    node* s = getSibling(n);
+    
+    if ((n->getParent()->getColor() == BLACK) && (s->getColor() == BLACK) &&
+        (s->getLeft()->getColor() == BLACK) && (s->getRight()->getColor() == BLACK)) {
+        s->setColor(RED);
+        DeleteCase1(root,n->getParent());
+    } else {
+        DeleteCase4(root,n);
+    }
+}
+
+
+
+
+
+
+void DeleteCase5(node*& root,node* n) {
+    int RED = 0;
+    int BLACK = 0;
+    node* s = getSibling(n);
     
   
-    if (s->color == BLACK) {
+    if (s->getColor() == BLACK) {
        
-        if ((n == n->parent->left) && (s->right->color == BLACK) &&
-            (s->left->color == RED)) {
+        if ((n == n->getParent()->getLeft()) && (s->getRight()->getColor() == BLACK) &&
+            (s->getLeft()->getColor() == RED)) {
           
-            s->color = RED;
-            s->left->color = BLACK;
-            RotateRight(s);
-        } else if ((n == n->parent->right) && (s->left->color == BLACK) &&
-                   (s->right->color == RED)) {
+            s->setColor(RED);
+            s->getLeft()->setColor(BLACK);
+            rightRotate(root,s);
+        } else if ((n == n->getParent()->getRight()) && (s->getLeft()->getColor() == BLACK) &&
+                   (s->getRight()->getColor() == RED)) {
            
-            s->color = RED;
-            s->right->color = BLACK;
-            RotateLeft(s);
+            s->setColor(RED);
+            s->getRight()->setColor(BLACK);
+            leftRotate(root,s);
         }
     }
-    DeleteCase6(n);
+    DeleteCase6(root,n);
 }
 
 
 
 
 
-void DeleteCase6(node*& root, Node* n) {
-    Node* s = GetSibling(n);
+void DeleteCase6(node*& root, node* n) {
+    int RED = 0;
+    int BLACK = 0;
+    node* s = getSibling(n);
     
-    s->color = n->parent->color;
-    n->parent->color = BLACK;
+    s->setColor(n->getParent()->getColor());
+    n->getParent()->setColor(BLACK);
     
-    if (n == n->parent->left) {
-        s->right->color = BLACK;
-        RotateLeft(n->parent);
+    if (n == n->getParent()->getLeft()) {
+        s->getRight()->setColor(BLACK);
+       leftRotate(root,n->getParent());
     } else {
-        s->left->color = BLACK;
-        RotateRight(n->parent);
+        s->getLeft()->setColor(BLACK);
+       rightRotate(root,n->getParent());
     }
 }
 
@@ -637,7 +724,7 @@ int main() {
             
             
         } else if(strcmp(inp, "search") == 0) {
-            /*
+            
             cout << "What would you like to search for" << endl;
             char inp[100];
             cin.get(inp,100);
@@ -659,7 +746,7 @@ int main() {
             }
             
             //  cout << root->getValue()  << "z" << endl;
-            */
+            
         } else if(strcmp(inp, "delete") == 0) {
             char inp[100];
             cin.get(inp,100);
