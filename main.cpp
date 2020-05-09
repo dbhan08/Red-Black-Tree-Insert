@@ -368,48 +368,18 @@ void ReplaceNode(Node* n, Node* child) {
 
 
 node* remove(node* &root, int value); {
-    int RED = 0;
-    int BLACK = 1;
-    int side;
-    node* temp = search(root,value);
-    
-    if(temp != NULL) {
-        if(temp ->getLeft() != NULL && temp->getRight() != NULL) {
-            node* next = temp->getLeft();
-            while(next->getRight() != NULL) {
-                next = next->getRight();
-            }
-            
-            temp->setValue(*(next->getValue()));
-            
-        }
-    }
-    
-    if(next->getParent()->getLeft() == next) {
-        side = 0;
+    node* n= search(root,value);
+    if(n->getRight() != NULL) {
+        node* child = n->getRight();
     } else {
-        side = 1;
+        node* child = n->getLeft();
     }
     
-    
-    if(next ->getLeft() != NULL || next ->getRight() != NULL) {
-        if(next->getLeft() != NULL) {
-            if(next->getColor() == RED && next->getLeft()->getColor() == BLACK) {
-                
-            }
-            
-        } else if(next->getRight() != NULL) {
-            
-        }
-    } else {
-        if(next->getColor() == RED) {
-            if(next->getParent() ->getLeft() == next) {
-                next->getParent()->setLeft(NULL);
-            } else {
-                next->getParent()->setLeft(NULL);
-            }
-        }
+    ReplaceNode(n,child);
+    if(n->getColor() == BLACK) {
+        
     }
+    
     
 }
 
@@ -448,6 +418,69 @@ void DeleteCase3(Node* n) {
         DeleteCase4(n);
     }
 }
+
+void DeleteCase4(Node* n) {
+    Node* s = GetSibling(n);
+    
+    if ((n->parent->color == RED) && (s->color == BLACK) &&
+        (s->left->color == BLACK) && (s->right->color == BLACK)) {
+        s->color = RED;
+        n->parent->color = BLACK;
+    } else {
+        DeleteCase5(n);
+    }
+}
+
+
+
+
+
+void DeleteCase5(Node* n) {
+    Node* s = GetSibling(n);
+    
+    // This if statement is trivial, due to case 2 (even though case 2 changed
+    // the sibling to a sibling's child, the sibling's child can't be red, since
+    // no red parent can have a red child).
+    if (s->color == BLACK) {
+        // The following statements just force the red to be on the left of the
+        // left of the parent, or right of the right, so case six will rotate
+        // correctly.
+        if ((n == n->parent->left) && (s->right->color == BLACK) &&
+            (s->left->color == RED)) {
+            // This last test is trivial too due to cases 2-4.
+            s->color = RED;
+            s->left->color = BLACK;
+            RotateRight(s);
+        } else if ((n == n->parent->right) && (s->left->color == BLACK) &&
+                   (s->right->color == RED)) {
+            // This last test is trivial too due to cases 2-4.
+            s->color = RED;
+            s->right->color = BLACK;
+            RotateLeft(s);
+        }
+    }
+    DeleteCase6(n);
+}
+
+
+
+
+
+void DeleteCase6(Node* n) {
+    Node* s = GetSibling(n);
+    
+    s->color = n->parent->color;
+    n->parent->color = BLACK;
+    
+    if (n == n->parent->left) {
+        s->right->color = BLACK;
+        RotateLeft(n->parent);
+    } else {
+        s->left->color = BLACK;
+        RotateRight(n->parent);
+    }
+}
+
 
 
 
