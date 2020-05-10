@@ -376,7 +376,7 @@ node* search(node* root, int value) {
         if(value == *root->getValue()) {
             // If the current node has the same value as the value being searched for return the current node(node found)
             // cout << root->getValue() << "a" << endl;
-            return root;
+                       return root;
             
             
             
@@ -441,13 +441,17 @@ void ReplaceNode(node* parent, node* child) {
 node* remove(node* &root, int value) {
     node* child = NULL;
     int RED = 0;
-    int BLACK = 0;
+    int BLACK = 1;
     node* temp= search(root,value);
     
-    node* sucsessor = temp->getRight();
-    while(sucsessor->getLeft() != NULL) {
-        sucsessor = sucsessor->getLeft();
+    node* sucsessor = temp->getLeft();
+    
+    while(sucsessor->getRight() != NULL) {
+        sucsessor = sucsessor->getRight();
     }
+    
+    cout << *sucsessor->getValue() << endl;
+    temp->setValue(*sucsessor->getValue());
     
     
     
@@ -456,30 +460,31 @@ node* remove(node* &root, int value) {
         node* child = sucsessor->getRight();
     } else {
         node* child = sucsessor->getLeft();
-    }
-    
-  
-   
-  ReplaceNode(temp,child);
 
-   // cout << sucsessor;
+   
+  ReplaceNode(sucsessor,child);
+
+
+    
     if(sucsessor->getColor() == BLACK) {
-        if( child->getColor() == RED) {
+   
+        if(child != NULL  && child->getColor() == RED) {
             child->setColor(BLACK);
         } else {
+            
             DeleteCase1(root,child);
         }
     }
     
-    
-   // free(temp);
+   
+    free(temp);
 }
 
 
 
 
 void DeleteCase1(node*& root, node* n) {
-    cout << "nigga" << endl;
+    
     int RED = 0;
     int BLACK = 0;
     if (n->getParent() != NULL) {
