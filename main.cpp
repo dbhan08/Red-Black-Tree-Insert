@@ -420,42 +420,66 @@ node* search(node* root, int value) {
 
 
 void ReplaceNode(node* parent, node* child) {
+    if(child != NULL) {
     child->setParent(parent->getParent());
+    }
     if (parent == parent->getParent()->getLeft()) {
         parent->getParent()->setLeft(child);
     } else {
         parent->getParent()->setRight(child);
     }
+    
 }
 
 
+
+
+
+
+
+
 node* remove(node* &root, int value) {
-    node* child;
+    node* child = NULL;
     int RED = 0;
     int BLACK = 0;
     node* temp= search(root,value);
-    if(temp->getRight() != NULL) {
-        node* child = temp->getRight();
+    
+    node* sucsessor = temp->getRight();
+    while(sucsessor->getLeft() != NULL) {
+        sucsessor = sucsessor->getLeft();
+    }
+    
+    
+    
+    
+    if(sucsessor->getRight() != NULL) {
+        node* child = sucsessor->getRight();
     } else {
-        node* child = temp->getLeft();
+        node* child = sucsessor->getLeft();
     }
     
   
-    if(temp->getColor() == BLACK) {
-        if(child->getColor() == RED) {
+   
+  ReplaceNode(temp,child);
+
+   // cout << sucsessor;
+    if(sucsessor->getColor() == BLACK) {
+        if( child->getColor() == RED) {
             child->setColor(BLACK);
         } else {
             DeleteCase1(root,child);
         }
     }
-      ReplaceNode(temp,child);
-    free(temp);
+    
+    
+   // free(temp);
 }
 
 
 
 
 void DeleteCase1(node*& root, node* n) {
+    cout << "nigga" << endl;
     int RED = 0;
     int BLACK = 0;
     if (n->getParent() != NULL) {
@@ -754,7 +778,7 @@ int main() {
             cin.ignore(100,'\n');
             int a = atoi(inp);
             
-            
+            remove(root,a);
             visualize(root,0);
             
             
