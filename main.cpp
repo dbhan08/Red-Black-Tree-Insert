@@ -479,7 +479,7 @@ node* remove(node* &root, int value) {
    
     free(temp);
 }
-
+}
 
 
 
@@ -786,19 +786,11 @@ int main() {
             remove(root,a);
             visualize(root,0);
             
-            
         } else if(strcmp(inp, "quit") == 0) {
             running = false;
-            
-            
         } else {
             cout << "Enter a valid option" << endl;;
-            
         }
-        
-        
-        
-        
     }
     
     
@@ -809,8 +801,8 @@ int main() {
     
     
     return 0;
-}
 
+}
 
 
 
