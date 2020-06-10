@@ -18,12 +18,6 @@ using namespace std;
 
 
 
-void DeleteCase1(node*& root,node* n);
-void DeleteCase2(node*& root,node* n);
-void DeleteCase3(node*& root,node* n);
-void DeleteCase4(node*& root,node* n);
-void DeleteCase5(node*& root,node* n);
-void DeleteCase6(node*& root,node* n);
 
 
 
@@ -35,6 +29,7 @@ void visualize(node* head, int depth=0)
     int RED = 0;
     int BLACK = 1;
     if(head != NULL ) {
+        
         if(head->getRight() != NULL) {
             //   cout << "a" << endl;
             //  cout << head->getRight() << endl;
@@ -419,9 +414,20 @@ node* search(node* root, int value) {
 }
 
 
+
+
+
+
+
+
+
+
+
+
 void ReplaceNode(node* parent, node* child) {
+    
     if(child != NULL) {
-    child->setParent(parent->getParent());
+        child->setParent(parent->getParent());
     }
     if (parent == parent->getParent()->getLeft()) {
         parent->getParent()->setLeft(child);
@@ -431,171 +437,185 @@ void ReplaceNode(node* parent, node* child) {
     
 }
 
+// Function reblances the tree for removing
 
-
-
-
-
-
-
-node* remove(node* &root, int value) {
-    node* child = NULL;
-    int RED = 0;
-    int BLACK = 1;
-    node* temp= search(root,value);
+void fixRemove(node* & root,node* n, int side)
+{
     
-    node* sucsessor = temp->getLeft();
-    
-    while(sucsessor->getRight() != NULL) {
-        sucsessor = sucsessor->getRight();
-    }
-    
-    cout << *sucsessor->getValue() << endl;
-    temp->setValue(*sucsessor->getValue());
-    
-    
-    
-    
-    if(sucsessor->getRight() != NULL) {
-        node* child = sucsessor->getRight();
-    } else {
-        node* child = sucsessor->getLeft();
 
-   
-  ReplaceNode(sucsessor,child);
-
-
-    
-    if(sucsessor->getColor() == BLACK) {
-   
-        if(child != NULL  && child->getColor() == RED) {
-            child->setColor(BLACK);
-        } else {
+    if(n->getParent() != NULL)
+    {
+       
+        if(getSibling(n) ->getColor() == 0)
+        {
+          
+            getSibling(n)->setColor(1);
+            n->getParent()->setColor(0);
             
-            DeleteCase1(root,child);
+            
+      
+            if(side == 1) {
+                rightRotate(root,n->getParent());
+            }else {
+                leftRotate(root,n->getParent());
+            }
+            
+            
         }
-    }
-    
-   
-    free(temp);
-}
-}
-
-
-
-void DeleteCase1(node*& root, node* n) {
-    
-    int RED = 0;
-    int BLACK = 0;
-    if (n->getParent() != NULL) {
-        DeleteCase2(root,n);
-    }
-}
-
-void DeleteCase2(node*& root,node* n) {
-    int RED = 0;
-    int BLACK = 0;
-    node* s = getSibling(n);
-    
-    if (s->getColor() == RED) {
-        n->getParent()->setColor(RED);
-        s->setColor(BLACK);
-        if (n == n->getParent()->getLeft()) {
-            leftRotate(root,n->getParent());
-        } else {
+        
+        
+        if(getSibling(n)->getRight()->getColor() == 1 && getSibling(n)->getLeft()->getColor() == 1)
+        {
+        
+            if(n->getParent()->getColor() == 1)
+            {
+                
+                getSibling(n)->setColor(0);
+                
+                
+                if(getGrand(n) == NULL) {
+                    fixRemove(root,n->getParent(), 2);
+                } else if(getGrand(n)->getRight() == n->getParent()) {
+                    fixRemove(root,n->getParent(), 1);
+                } else{
+                    fixRemove(root,n->getParent(), 0);
+                }
+                
+                return;
+            }
+            
+          
+            else
+            {
+               
+                n->getParent()->setColor(1);
+                getSibling(n)->setColor(0);
+               
+                
+                return;
+            }
+        }
+  
+        if(side == 1 && getSibling(n)->getLeft()->getColor() == 1 && getSibling(n)->getRight()->getColor() == 0)
+        {
+            getSibling(n)->getRight()->setColor(1);
+            getSibling(n)->setColor(0);
+           leftRotate(root,getSibling(n));
+        }
+        else if(side == 0 && getSibling(n)->getRight()->getColor() == 1 && getSibling(n)->getLeft()->getColor() == 1)
+        {
+            getSibling(n)->getLeft()->setColor(1);
+            getSibling(n)->setColor(0);
+            rightRotate(root,getSibling(n));
+        }
+        
+        
+        getSibling(n)->setColor(n->getParent()->getColor());
+       
+      n->getParent()->setColor(1);
+        if(side == 1)
+        {
+            getSibling(n)->getLeft()->setColor(1);
+            
             rightRotate(root,n->getParent());
         }
-    }
-    DeleteCase3(root,n);
-}
-
-void DeleteCase4(node*& root,node* n) {
-    int RED = 0;
-    int BLACK = 0;
-    node* s = getSibling(n);
-    
-    if ((n->getParent()->getColor() == RED) && (s->getColor() == BLACK) &&
-        (s->getLeft()->getColor() == BLACK) && (s->getRight()->getColor() == BLACK)) {
-        s->setColor(RED);
-        n->getParent()->setColor(BLACK);
-    } else {
-        DeleteCase5(root,n);
-    }
-}
-
-
-
-
-
-
-
-
-
-
-void DeleteCase3(node*& root,node* n) {
-    int RED = 0;
-    int BLACK = 0;
-    node* s = getSibling(n);
-    
-    if ((n->getParent()->getColor() == BLACK) && (s->getColor() == BLACK) &&
-        (s->getLeft()->getColor() == BLACK) && (s->getRight()->getColor() == BLACK)) {
-        s->setColor(RED);
-        DeleteCase1(root,n->getParent());
-    } else {
-        DeleteCase4(root,n);
-    }
-}
-
-
-
-
-
-
-void DeleteCase5(node*& root,node* n) {
-    int RED = 0;
-    int BLACK = 0;
-    node* s = getSibling(n);
-    
-  
-    if (s->getColor() == BLACK) {
-       
-        if ((n == n->getParent()->getLeft()) && (s->getRight()->getColor() == BLACK) &&
-            (s->getLeft()->getColor() == RED)) {
-          
-            s->setColor(RED);
-            s->getLeft()->setColor(BLACK);
-            rightRotate(root,s);
-        } else if ((n == n->getParent()->getRight()) && (s->getLeft()->getColor() == BLACK) &&
-                   (s->getRight()->getColor() == RED)) {
-           
-            s->setColor(RED);
-            s->getRight()->setColor(BLACK);
-            leftRotate(root,s);
+        else
+        {
+            getSibling(n)->getRight()->setColor(1);
+            leftRotate(root,n->getParent());
         }
     }
-    DeleteCase6(root,n);
 }
 
-
-
-
-
-void DeleteCase6(node*& root, node* n) {
-    int RED = 0;
-    int BLACK = 0;
-    node* s = getSibling(n);
-    
-    s->setColor(n->getParent()->getColor());
-    n->getParent()->setColor(BLACK);
-    
-    if (n == n->getParent()->getLeft()) {
-        s->getRight()->setColor(BLACK);
-       leftRotate(root,n->getParent());
-    } else {
-        s->getLeft()->setColor(BLACK);
-       rightRotate(root,n->getParent());
+// Functions removes numbers from the rbt
+node* remove(node* &root, int value)
+{
+  node* temp = search(root, value);
+   
+    if(temp != NULL)
+    {
+      
+        if(temp->getRight() != NULL && temp->getLeft() != NULL)
+        {
+         
+            node* replace = temp->getLeft();
+            while(replace->getRight() != NULL) {
+                replace = replace->getRight();
+            
+            }
+          
+            temp->setValue(*(replace->getValue()));
+            temp = replace;
+        }
+        
+        int side = 0;
+        if(temp->getParent()->getLeft() == temp) {
+            side = 0;
+        } else {
+            side = 1;
+        }
+                           
+        
+        if(temp ->getColor() != 1)
+        {
+            if(side == 1)
+                temp->getParent()->setRight(NULL);
+            else if(side == 0)
+                temp->getParent()->setLeft(NULL);
+        }
+        
+     
+        else if(temp->getRight() || temp->getLeft())
+            
+        {
+            node* child;
+            if(temp->getLeft() != NULL) {
+                node* child = temp->getLeft();
+            } else {
+                node* child = temp->getRight();
+            }
+            child->setColor(1);
+            ReplaceNode(temp,child);
+        }
+        
+      
+        else
+        {
+            fixRemove(root,temp, side);
+        }
+        
+        
+        if(temp->getParent() == NULL)
+        {
+            temp->setValue(0);
+        }
+        
+        else
+        {
+            if(side == 1 && temp->getParent() != NULL) {
+                temp->getParent()->setRight(NULL);
+            }
+            else if(side == 0 && temp->getParent()) {
+                temp->getParent()->setLeft(NULL);
+            }
+            
+            free(temp);
+        }
+        
     }
+   
+    else
+    {
+        cout << "That number is not in the tree.\n";
+    }
+    
+    while(root->getParent() != NULL) {
+        root = root->getParent();
+    }
+    return root;
 }
+
+
 
 
 
@@ -784,6 +804,8 @@ int main() {
             int a = atoi(inp);
             
             remove(root,a);
+           
+       
             visualize(root,0);
             
         } else if(strcmp(inp, "quit") == 0) {
