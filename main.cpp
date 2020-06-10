@@ -606,7 +606,7 @@ node* remove(node* &root, int value)
    
     else
     {
-        cout << "That number is not in the tree.\n";
+        cout << "Number not found" << endl;
     }
     
     while(root->getParent() != NULL) {
